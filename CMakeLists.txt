@@ -6,7 +6,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 find_package(Eigen3 REQUIRED)
 find_package(PythonLibs 3.6 REQUIRED)
-find_package(Boost COMPONENTS filesystem program_options python REQUIRED)
+find_package(Boost COMPONENTS filesystem program_options python3 REQUIRED)
 find_package(FCL REQUIRED)
 include_directories(include ${fcl_INCLUDE_DIRS})
 
@@ -23,7 +23,7 @@ target_link_libraries(path_segments
         ${fcl_LIBRARIES}
         )
 
-add_library(cbd_ta MODULE  SHARED src/cbd_ta/main_cbd_py.cpp)
+add_library(cbd_ta MODULE  SHARED src/cbd_ta/main_cbd_py.cpp ${SRC_FILES})
 target_link_libraries(cbd_ta
         Eigen3::Eigen
         ${Boost_LIBRARIES}
@@ -31,7 +31,7 @@ target_link_libraries(cbd_ta
         ${PYTHON_LIBRARIES}
         )
 
-target_include_directories(cbd_ta PRIVATE ${PYTHON_INCLUDE_DIRS})
+target_include_directories(cbd_ta PRIVATE ${PYTHON_INCLUDE_DIRS} include)
 
 # Copy the __init__.py file
 configure_file(src/cbd_ta/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/src/__init__.py COPYONLY)
