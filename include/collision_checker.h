@@ -5,7 +5,13 @@
 #ifndef GOAL_FREE_PLANNER_COLLISION_CHECKER_H
 #define GOAL_FREE_PLANNER_COLLISION_CHECKER_H
 #include <fcl/config.h>
-#include <fcl/fcl.h>
+//#include <fcl/fcl.h>
+#include "fcl/math/bv/utility.h"
+#include "fcl/narrowphase/collision.h"
+#include "fcl/narrowphase/detail/gjk_solver_indep.h"
+#include "fcl/narrowphase/detail/gjk_solver_libccd.h"
+#include "fcl/narrowphase/detail/traversal/collision_node.h"
+#include "fcl/narrowphase/continuous_collision.h"
 
 class CollisionChecker
 {
@@ -14,6 +20,12 @@ public:
     {
         geom_ = std::make_shared<fcl::Boxd>(0.345, 0.5, 0.1);
     }
+
+    void setGeom(const std::array<double, 3>& param)
+    {
+        geom_ = std::make_shared<fcl::Boxd>(param[0], param[1], param[2]);
+    }
+
     fcl::ContinuousCollisionObjectd *getCCO(const std::array<double, 3>& start, std::array<double, 3>& goal)
     {
         std::vector<fcl::Vector3d> t(4), r(4);

@@ -12,12 +12,14 @@ using libMultiRobotPlanning::NextBestAssignment;
 class ConflictBasedDecomposer: public PathDecomposition
 {
 public:
-    ConflictBasedDecomposer(int numAgents, const PATH &path);
+    ConflictBasedDecomposer(int numAgents, const PATH &path, bool verbose=true);
+    void setGeom(const std::array<double, 3>&param);
 
 protected:
     void findAssignment() override;
 private:
     CollisionChecker collision_;
+
 
     std::vector<std::vector<int>> getCostMatrix() const;
     std::map<std::string, std::string> resolveConflicts(NextBestAssignment<std::string, std::string>& assignment);

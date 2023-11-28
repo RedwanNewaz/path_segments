@@ -3,8 +3,9 @@
 //
 #include "conflict_based_decomposer.h"
 
-ConflictBasedDecomposer::ConflictBasedDecomposer(int numAgents, const PATH &path) : PathDecomposition(numAgents, path) {
-
+ConflictBasedDecomposer::ConflictBasedDecomposer(int numAgents, const PATH &path, bool verbose) :
+PathDecomposition(numAgents, path){
+    verbose_ = verbose;
 }
 
 
@@ -90,9 +91,13 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
 
     }while(moveToTargets(prevCoord_, newCoord_));
     eraseByIndices(path_, removeIndexes);
-    std::cout << "  + pathSize: " << path_.size() << std::endl;
-    std::cout << "  - cost: " << c << std::endl;
-    std::cout << "    assignment:" << std::endl;
+
+    if(verbose_)
+    {
+        std::cout << "  + pathSize: " << path_.size() << std::endl;
+        std::cout << "  - cost: " << c << std::endl;
+        std::cout << "    assignment:" << std::endl;
+    }
 
     return solution;
 }
@@ -141,4 +146,8 @@ bool ConflictBasedDecomposer::moveToTargets(const std::vector<COORD>& prevCoord,
     }
     return success;
 
+}
+
+void ConflictBasedDecomposer::setGeom(const std::array<double, 3> &param) {
+    collision_.setGeom(param);
 }

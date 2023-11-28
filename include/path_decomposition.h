@@ -70,8 +70,11 @@ protected:
         {
             int index = std::stoi(s.second);
             chunks_[k++].emplace_back(current_[s.first]);
-            std::cout << "      " << s.first  << ": (" ;
-            std::cout  <<path_[index].first  << ", " << path_[index].second << ")\n" ;
+            if(verbose_)
+            {
+                std::cout << "      " << s.first  << ": (" ;
+                std::cout  <<path_[index].first  << ", " << path_[index].second << ")\n" ;
+            }
         }
         // update parent cost and heading angle
         for(int i = 0; i < prevCoord_.size(); ++i)
@@ -121,6 +124,7 @@ protected:
     int numAgents_;
     std::map<std::string, COORD> current_;
     std::vector<PATH> chunks_;
+    bool verbose_;
 
     std::vector<double>headingAngles_;
     std::vector<COORD> prevCoord_, newCoord_;

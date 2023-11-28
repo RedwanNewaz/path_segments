@@ -1,6 +1,6 @@
 from distutils.core import setup, Extension
 
-target_module = Extension('cbd_ta.cbd_ta',
+target_module = Extension('cbd_ta',
                         sources=['src/cbd_ta/main_cbd_py.cpp'],
                         include_dirs=['/usr/local/include', 'include', '/usr/include/eigen3',
                                       'build/install/include'],

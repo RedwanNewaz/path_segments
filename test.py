@@ -6,7 +6,7 @@ Y = path[:, 1].astype(int).tolist()
 
 NumAgents = 4
 
-cbd = cbd_ta(NumAgents, X, Y)
+cbd = cbd_ta(NumAgents, X, Y, False)
 agentX = [27, 28, 11, 49]
 agentY = [46, 34, 26, 25]
 cbd.setAgents(agentX, agentY)

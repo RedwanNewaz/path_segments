@@ -11,7 +11,7 @@ class cbd_ta
 {
 public:
 
-    cbd_ta(int numAgents, const boost::python::list& X, const boost::python::list& Y)
+    cbd_ta(int numAgents, const boost::python::list& X, const boost::python::list& Y, bool verbose=true)
     {
         PathDecomposition::PATH path;
         for (int i = 0; i < len(X); ++i) {
@@ -20,12 +20,22 @@ public:
             std::pair<int, int> coord = std::make_pair(x, y);
             path.push_back(coord);
         }
-        decomposer_ = new ConflictBasedDecomposer(numAgents, path);
+        decomposer_ = new ConflictBasedDecomposer(numAgents, path, verbose);
     } // added constructor
     ~cbd_ta()
     {
         delete decomposer_;
     }
+    void setGeom(const boost::python::list& param)
+    {
+        std::array<double, 3> p;
+        for(int i = 0; i < 3; ++i)
+        {
+           p[i] = boost::python::extract<double>(param[i]);
+        }
+        decomposer_->setGeom(p);
+    }
+
     void setAgents(const boost::python::list& X, const boost::python::list& Y)
     {
 
@@ -61,9 +71,10 @@ private:
 BOOST_PYTHON_MODULE(cbd_ta)
 {
     Py_Initialize();
-    class_<cbd_ta>("cbd_ta", init<int, const boost::python::list&, const boost::python::list&>())
-            .def(init<int, const boost::python::list&, const boost::python::list&>())
+    class_<cbd_ta>("cbd_ta", init<int, const boost::python::list&, const boost::python::list&, bool>())
+            .def(init<int, const boost::python::list&, const boost::python::list&, bool>())
             .def("setAgents", &cbd_ta::setAgents)
+            .def("setGeom", &cbd_ta::setGeom)
             .def("getAgentPath", &cbd_ta::getAgentPath)
             ;
 }
