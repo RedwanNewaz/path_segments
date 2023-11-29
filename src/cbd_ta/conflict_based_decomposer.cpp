@@ -14,12 +14,11 @@ void ConflictBasedDecomposer::findAssignment()
     do{
         auto costMatrix = getCostMatrix();
         NextBestAssignment<std::string, std::string> assignment;
-        for(size_t ii = 0; ii < costMatrix.size(); ++ii)
+        for(auto& ii: costMatrix)
         {
-            for(size_t jj = 0; jj < costMatrix[ii].size(); ++jj)
+            for(auto& jj : costMatrix[ii.first])
             {
-                double cost = costMatrix[ii][jj];
-                assignment.setCost("a" + std::to_string(ii),  std::to_string(jj), cost);
+                assignment.setCost("a" + std::to_string(ii.first),  std::to_string(jj.first), jj.second);
             }
         }
         assignment.solve();
@@ -32,9 +31,9 @@ void ConflictBasedDecomposer::findAssignment()
             break;
         }
 
-    }while(path_.size() >  numAgents_);
+    }while((path_.size() - visited_.size()) >  numAgents_);
 
-    std::cout << "[Unassigned] - locations: " << path_.size() << std::endl;
+    std::cout << "[Unassigned] - locations: " << path_.size() - visited_.size() << std::endl;
 
     for (int a = 0; a < numAgents_; ++a) {
         std::cout << "[Assigned] - pathSize: " << chunks_[a].size() << std::endl;
@@ -42,18 +41,20 @@ void ConflictBasedDecomposer::findAssignment()
 }
 
 
-std::vector<std::vector<double>> ConflictBasedDecomposer::getCostMatrix() const
+ConflictBasedDecomposer::COSTMAT ConflictBasedDecomposer::getCostMatrix() const
 {
     int i = 0;
-    int N = std::min(numAgents_, (int)path_.size());
-    std::vector<std::vector<double>> costMatrix(N);
+    std::unordered_map<int, std::vector<std::pair<int, double>>> costMatrix;
     for(const auto& agent: current_)
     {
         int j = 0;
         for (const auto& p: path_)
         {
-            double d  = parentCost_[i] + distance(agent.second.first, agent.second.second, p.second.first, p.second.second);
-            costMatrix[i].push_back(d);
+            if(visited_.count(p.first) == 0)
+            {
+                double d  = parentCost_[i] + distance(agent.second.first, agent.second.second, p.second.first, p.second.second);
+                costMatrix[i].push_back(std::make_pair(j, d));
+            }
             ++j;
         }
         ++i;
@@ -65,9 +66,6 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
 {
     std::vector<int>removeIndexes;
     std::map<std::string, std::string> solution;
-
-    if(path_.size() < numAgents_)
-        return solution;
 
     double c;
     size_t loop = 0;
@@ -92,12 +90,14 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
 
     }while(!moveToTargets(prevCoord_, newCoord_));
 
+    for(const auto& index:removeIndexes)
+        visited_.insert(index);
 
-    eraseByIndices(removeIndexes);
+//    eraseByIndices(removeIndexes);
 
     if(verbose_)
     {
-        std::cout << "  + pathSize: " << path_.size() << std::endl;
+        std::cout << "  + pathSize: " << path_.size() - visited_.size() << std::endl;
         std::cout << "  - cost: " << c << std::endl;
         std::cout << "    assignment:" << std::endl;
     }

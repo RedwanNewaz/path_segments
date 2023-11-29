@@ -10,7 +10,9 @@
 #include <map>
 #include <cmath>
 #include <algorithm>
+#include <unordered_map>
 #include <map>
+#include <unordered_set>
 #define MAX_ITERATION (30000)
 
 
@@ -153,6 +155,7 @@ protected:
     std::vector<double>headingAngles_;
     std::vector<COORD> prevCoord_, newCoord_;
     std::vector<double>parentCost_;
+    std::unordered_set<int> visited_;
 };
 
 

@@ -11,6 +11,7 @@ using libMultiRobotPlanning::NextBestAssignment;
 
 class ConflictBasedDecomposer: public PathDecomposition
 {
+    using COSTMAT=std::unordered_map<int, std::vector<std::pair<int, double>>>;
 public:
     ConflictBasedDecomposer(int numAgents,  PATH &path, bool verbose=true);
     void setGeom(const std::array<double, 3>&param);
@@ -21,7 +22,7 @@ private:
     CollisionChecker collision_;
 
 
-    std::vector<std::vector<double>> getCostMatrix() const;
+    COSTMAT getCostMatrix() const;
     std::map<std::string, std::string> resolveConflicts(NextBestAssignment<std::string, std::string>& assignment);
     bool moveToTargets(const std::vector<COORD>& prevCoord, const std::vector<COORD>& newCoord);
 
