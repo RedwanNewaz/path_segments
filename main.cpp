@@ -85,6 +85,7 @@ int main() {
     }
 
     decomposer.computeCost(agents);
+    save_results(decomposer, numAgents);
 
 
     return 0;
