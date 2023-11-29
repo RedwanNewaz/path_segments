@@ -32,7 +32,7 @@ void ConflictBasedDecomposer::findAssignment()
             break;
         }
 
-    }while(path_.size() >  0);
+    }while(path_.size() >  numAgents_);
 
     std::cout << "[Unassigned] - locations: " << path_.size() << std::endl;
 
@@ -49,9 +49,6 @@ std::vector<std::vector<int>> ConflictBasedDecomposer::getCostMatrix() const
     std::vector<std::vector<int>> costMatrix(N);
     for(const auto& agent: current_)
     {
-        if(i >= path_.size())
-            continue;
-
         int j = 0;
         for (const auto& p: path_)
         {
@@ -68,8 +65,13 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
 {
     std::vector<size_t>removeIndexes;
     std::map<std::string, std::string> solution;
+
+    if(path_.size() < numAgents_)
+        return solution;
+
     int64_t c;
-    size_t loop;
+    size_t loop = 0;
+
     do
     {
         removeIndexes.clear();
@@ -83,13 +85,14 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
             removeIndexes.push_back(index);
             ++k;
         }
-
         // Check a condition to throw an exception
         if (++loop > MAX_ITERATION) {
             throw std::runtime_error("Maximum number of iterations reached");
         }
 
-    }while(moveToTargets(prevCoord_, newCoord_));
+    }while(!moveToTargets(prevCoord_, newCoord_) || !isValidAssignment());
+
+
     eraseByIndices(path_, removeIndexes);
 
     if(verbose_)
@@ -112,14 +115,8 @@ bool ConflictBasedDecomposer::moveToTargets(const std::vector<COORD>& prevCoord,
 
     int N = prevCoord.size();
     // check same final goals
-    for (int i = 1; i < N; ++i) {
-        auto a = newCoord[i-1];
-        auto b = newCoord[i];
-        if(distance(a.first, a.second, b.first, b.second) == 0)
-            return false;
-    }
 
-    bool success = true;
+
     for(int i = 0; i < N; ++i)
     {
         for (int j = 0; j < N; ++j) {
@@ -138,13 +135,12 @@ bool ConflictBasedDecomposer::moveToTargets(const std::vector<COORD>& prevCoord,
                 auto rj = collision_.getCCO(rj_start, rj_goal);
                 if(collision_.collide(ri, rj))
                 {
-                    success = false;
-                    break;
+                    return false;
                 }
             }
         }
     }
-    return success;
+    return true;
 
 }
 

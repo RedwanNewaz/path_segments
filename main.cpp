@@ -3,7 +3,7 @@
 #include <random>
 #include "conflict_based_decomposer.h"
 #include "rapidcsv.h"
-#define RANDOM_INIT
+//#define RANDOM_INIT
 
 std::pair<int, int> sampleCoord(int lower, int upper)
 {

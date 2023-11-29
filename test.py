@@ -1,5 +1,6 @@
 import numpy as np
 from build.cbd_ta import cbd_ta
+# from cbd_ta import cbd_ta
 path = np.loadtxt('test/coords.csv', delimiter=',')
 X = path[:, 0].astype(int).tolist()
 Y = path[:, 1].astype(int).tolist()

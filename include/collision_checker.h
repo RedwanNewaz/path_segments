@@ -4,7 +4,7 @@
 
 #ifndef GOAL_FREE_PLANNER_COLLISION_CHECKER_H
 #define GOAL_FREE_PLANNER_COLLISION_CHECKER_H
-#include <fcl/config.h>
+//#include <fcl/config.h>
 //#include <fcl/fcl.h>
 #include "fcl/math/bv/utility.h"
 #include "fcl/narrowphase/collision.h"

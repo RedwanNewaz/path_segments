@@ -61,8 +61,6 @@ public:
 
 protected:
 
-
-
     void update(std::map<std::string, std::string>& solution)
     {
         int k = 0;
@@ -109,7 +107,7 @@ protected:
         // Erase elements by indices
         for (const auto& index : sortedIndices) {
             if (index < vec.size()) {
-                vec.erase(vec.begin() + index);
+                vec.erase(vec.begin() + index );
             } else {
                 std::cerr << "Index " << index << " is out of range." << std::endl;
             }
@@ -117,6 +115,27 @@ protected:
     }
 
     virtual void findAssignment() = 0;
+
+    bool isValidAssignment() const
+    {
+        bool validAssignment = true;
+        for(auto check: {prevCoord_, newCoord_})
+            for (int i = 0; i <= numAgents_; ++i) {
+                auto a = check[(i +1) % numAgents_];
+                auto b = check[i % numAgents_];
+                if(distance(a.first, a.second, b.first, b.second) < 1)
+                {
+                    validAssignment = false;
+                    break;
+                }
+            }
+
+        if(!validAssignment)
+        {
+            std::cerr << "  + invalid assignment: " << path_.size() << std::endl;
+        }
+        return validAssignment;
+    }
 
 
 protected:
