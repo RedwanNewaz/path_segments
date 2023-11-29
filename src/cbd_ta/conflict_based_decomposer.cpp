@@ -3,7 +3,7 @@
 //
 #include "conflict_based_decomposer.h"
 
-ConflictBasedDecomposer::ConflictBasedDecomposer(int numAgents, const PATH &path, bool verbose) :
+ConflictBasedDecomposer::ConflictBasedDecomposer(int numAgents,  PATH &path, bool verbose) :
 PathDecomposition(numAgents, path){
     verbose_ = verbose;
 }
@@ -18,7 +18,7 @@ void ConflictBasedDecomposer::findAssignment()
         {
             for(size_t jj = 0; jj < costMatrix[ii].size(); ++jj)
             {
-                int cost = costMatrix[ii][jj];
+                double cost = costMatrix[ii][jj];
                 assignment.setCost("a" + std::to_string(ii),  std::to_string(jj), cost);
             }
         }
@@ -42,17 +42,17 @@ void ConflictBasedDecomposer::findAssignment()
 }
 
 
-std::vector<std::vector<int>> ConflictBasedDecomposer::getCostMatrix() const
+std::vector<std::vector<double>> ConflictBasedDecomposer::getCostMatrix() const
 {
     int i = 0;
     int N = std::min(numAgents_, (int)path_.size());
-    std::vector<std::vector<int>> costMatrix(N);
+    std::vector<std::vector<double>> costMatrix(N);
     for(const auto& agent: current_)
     {
         int j = 0;
         for (const auto& p: path_)
         {
-            int d  = parentCost_[i] + distance(agent.second.first, agent.second.second, p.first, p.second);
+            double d  = parentCost_[i] + distance(agent.second.first, agent.second.second, p.second.first, p.second.second);
             costMatrix[i].push_back(d);
             ++j;
         }
@@ -63,13 +63,13 @@ std::vector<std::vector<int>> ConflictBasedDecomposer::getCostMatrix() const
 
 std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(NextBestAssignment<std::string, std::string>& assignment)
 {
-    std::vector<size_t>removeIndexes;
+    std::vector<int>removeIndexes;
     std::map<std::string, std::string> solution;
 
     if(path_.size() < numAgents_)
         return solution;
 
-    int64_t c;
+    double c;
     size_t loop = 0;
 
     do
@@ -90,10 +90,10 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
             throw std::runtime_error("Maximum number of iterations reached");
         }
 
-    }while(!moveToTargets(prevCoord_, newCoord_) || !isValidAssignment());
+    }while(!moveToTargets(prevCoord_, newCoord_));
 
 
-    eraseByIndices(path_, removeIndexes);
+    eraseByIndices(removeIndexes);
 
     if(verbose_)
     {
@@ -131,7 +131,7 @@ bool ConflictBasedDecomposer::moveToTargets(const std::vector<COORD>& prevCoord,
                 auto rj_start = toState(prevCoord.at(j));
                 ri_start[2] = headingAngles_[j];
                 auto rj_goal = toState(newCoord.at(j));
-                ri_goal[2] = relAngle(prevCoord.at(j), newCoord.at(j));
+                rj_goal[2] = relAngle(prevCoord.at(j), newCoord.at(j));
                 auto rj = collision_.getCCO(rj_start, rj_goal);
                 if(collision_.collide(ri, rj))
                 {

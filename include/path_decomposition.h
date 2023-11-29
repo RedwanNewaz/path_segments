@@ -10,15 +10,16 @@
 #include <map>
 #include <cmath>
 #include <algorithm>
-#define MAX_ITERATION (3000)
+#include <map>
+#define MAX_ITERATION (30000)
 
 
 class PathDecomposition{
 
 public:
-    using COORD = std::pair<int, int>;
-    using PATH = std::vector<COORD>;
-    PathDecomposition(int numAgents, const PATH& path):
+    using COORD = std::pair<double, double>;
+    using PATH = std::map<int, COORD>;
+    PathDecomposition(int numAgents,  PATH& path):
             numAgents_(numAgents), path_(path)
     {
         chunks_.resize(numAgents);
@@ -31,30 +32,30 @@ public:
         std::fill(parentCost_.begin(), parentCost_.end(), 0);
     }
 
-    PATH getAgentPath(int index) const
+    std::vector<COORD> getAgentPath(int index) const
     {
         return chunks_.at(index);
     }
 
-    size_t getPathLength(const PATH& path) const
-    {
-        size_t totalLen = 0;
-        for (int i = 1; i < path.size(); ++i) {
-            double d = distance(path[i-1].first, path[i-1].second, path[i].first, path[i].second);
-            totalLen += d;
-        }
-        return totalLen;
-    }
+//    size_t getPathLength(const PATH& path) const
+//    {
+//        size_t totalLen = 0;
+//        for (int i = 1; i < path.size(); ++i) {
+//            double d = distance(path[i-1].first, path[i-1].second, path[i].first, path[i].second);
+//            totalLen += d;
+//        }
+//        return totalLen;
+//    }
 
 
-    void computeCost(const std::vector<std::pair<int, int>>& initPoses)
+    void computeCost(const PATH& initPoses)
     {
-        int i = 0;
+
         for(const auto& agent: initPoses)
         {
-            current_["a" + std::to_string(i)] = agent;
-            chunks_[i].emplace_back(agent);
-            ++i;
+            int i = agent.first;
+            current_["a" + std::to_string(i)] = agent.second;
+            chunks_[i].emplace_back(agent.second);
         }
         findAssignment();
     }
@@ -70,14 +71,14 @@ protected:
             chunks_[k++].emplace_back(current_[s.first]);
             if(verbose_)
             {
-                std::cout << "      " << s.first  << ": (" ;
-                std::cout  <<path_[index].first  << ", " << path_[index].second << ")\n" ;
+                std::cout << "      " << s.first  << ": t(" ;
+                std::cout  <<index<< ")\n" ;
             }
         }
         // update parent cost and heading angle
         for(int i = 0; i < prevCoord_.size(); ++i)
         {
-            int d = distance(prevCoord_[i].first, prevCoord_[i].second, newCoord_[i].first, newCoord_[i].second);
+            double d = distance(prevCoord_[i].first, prevCoord_[i].second, newCoord_[i].first, newCoord_[i].second);
             parentCost_[i] += d;
             headingAngles_[i] = relAngle(prevCoord_[i], newCoord_[i]);
         }
@@ -90,24 +91,28 @@ protected:
         return atan2(dy, dx);
     }
 
-    int distance(int x1, int y1, int x2, int y2) const
+    double distance(double x1, double y1, double x2, double y2) const
     {
-        return std::abs(x2 - x1) + std::abs(y2 - y1);
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+//        return std::abs(x2 - x1) + std::abs(y2 - y1);
+        return sqrt(dx * dx + dy * dy);
     }
 
 
 
     // Function to erase elements from a vector by indices
-    template <typename T>
-    void eraseByIndices(std::vector<T>& vec, const std::vector<size_t>& indices) {
+    void eraseByIndices(const std::vector<int>& indices) {
         // Sort the indices in descending order to avoid invalidation issues
-        std::vector<size_t> sortedIndices = indices;
-        std::sort(sortedIndices.rbegin(), sortedIndices.rend());
+//        std::vector<int> sortedIndices = indices;
+//        std::sort(sortedIndices.rbegin(), sortedIndices.rend());
 
         // Erase elements by indices
-        for (const auto& index : sortedIndices) {
-            if (index < vec.size()) {
-                vec.erase(vec.begin() + index );
+        for (const auto& index : indices) {
+            if (path_.find(index) != path_.end()) {
+//                vec.erase(vec.begin() + index );
+//                auto it = path_.find(index);
+                path_.erase(index);
             } else {
                 std::cerr << "Index " << index << " is out of range." << std::endl;
             }
@@ -142,12 +147,12 @@ protected:
     PATH path_;
     int numAgents_;
     std::map<std::string, COORD> current_;
-    std::vector<PATH> chunks_;
+    std::vector<std::vector<COORD>> chunks_;
     bool verbose_;
 
     std::vector<double>headingAngles_;
     std::vector<COORD> prevCoord_, newCoord_;
-    std::vector<int>parentCost_;
+    std::vector<double>parentCost_;
 };
 
 

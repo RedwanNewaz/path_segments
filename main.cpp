@@ -3,6 +3,9 @@
 #include <random>
 #include "conflict_based_decomposer.h"
 #include "rapidcsv.h"
+#include <sstream>
+#include <iostream>
+#include <fstream>
 //#define RANDOM_INIT
 
 std::pair<int, int> sampleCoord(int lower, int upper)
@@ -26,44 +29,63 @@ std::pair<int, int> sampleCoord(int lower, int upper)
     return std::make_pair(randomX, randomY);
 }
 
+void save_results(const ConflictBasedDecomposer& decomposer, int numAgents)
+{
+    for (int i = 0; i < numAgents; ++i) {
+        auto path = decomposer.getAgentPath(i);
+        std::stringstream ss;
+        for(const auto&p: path)
+        {
+            ss << p.first << "," << p.second << "\n";
+        }
+        std::ofstream myfile;
+        myfile.open ("../results/" + std::to_string(i + 1) + ".csv");
+        myfile << ss.str();
+        myfile.close();
+
+    }
+}
+
 int main() {
     std::cout << "Hello, World!" << std::endl;
     int numAgents = 4;
     int lower = 0;
     int upper = 50;
 
-    rapidcsv::Document pathData("../test/coords.csv", rapidcsv::LabelParams(-1, -1));
+    rapidcsv::Document pathData("../test/xy.csv", rapidcsv::LabelParams(-1, -1));
 
     // create path variable
     PathDecomposition::PATH path;
-    std::vector<int> X, Y;
-    X = pathData.GetColumn<int>(0);
-    Y = pathData.GetColumn<int>(1);
+    std::vector<double> X, Y;
+    X = pathData.GetColumn<double>(0);
+    Y = pathData.GetColumn<double>(1);
     for (int i = 0; i < X.size(); ++i) {
-        path.emplace_back(std::make_pair(X[i], Y[i]));
+        path[i] = std::make_pair(X[i], Y[i]);
     }
 
     // decompose path into num agents
     ConflictBasedDecomposer decomposer(numAgents, path);
     PathDecomposition::PATH agents;
 #ifndef RANDOM_INIT
-    std::vector<std::pair<int, int>>cand{
+    std::vector<std::pair<double, double>>cand{
             {27, 46},
             {28, 34},
             {11, 26},
             {49, 25}
     };
 #else
-    std::vector<std::pair<int, int>>cand;
+    std::vector<std::pair<double, double>>cand;
 #endif
     for (int i = 0; i < numAgents; ++i) {
 #ifdef RANDOM_INIT
         cand.push_back(sampleCoord(lower, upper));
 #endif
-        printf("[Init]: a%d (%d, %d) \n", i, cand[i].first, cand[i].second);
-        agents.emplace_back(cand[i]);
+        printf("[Init]: a%d (%lf, %lf) \n", i, cand[i].first, cand[i].second);
+        agents[i] = cand[i];
     }
 
     decomposer.computeCost(agents);
+
+
     return 0;
 }
