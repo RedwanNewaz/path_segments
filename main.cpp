@@ -6,26 +6,26 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
-//#define RANDOM_INIT
+#define RANDOM_INIT
 
-std::pair<int, int> sampleCoord(int lower, int upper)
+std::pair<double, double> sampleCoord(double lower, double upper)
 {
     // Seed for the random number generator
     std::random_device rd;
     std::mt19937 generator(rd());
 
     // Define the range for x and y coordinates
-    int minX = lower;
-    int maxX = upper;
-    int minY = lower;
-    int maxY = upper;
+    double minX = lower;
+    double maxX = upper;
+    double minY = lower;
+    double maxY = upper;
 
     // Generate random x and y coordinates
-    std::uniform_int_distribution<int> distributionX(minX, maxX);
-    std::uniform_int_distribution<int> distributionY(minY, maxY);
+    std::uniform_real_distribution<double> distributionX(minX, maxX);
+    std::uniform_real_distribution<double> distributionY(minY, maxY);
 
-    int randomX = distributionX(generator);
-    int randomY = distributionY(generator);
+    double randomX = distributionX(generator);
+    double randomY = distributionY(generator);
     return std::make_pair(randomX, randomY);
 }
 
@@ -47,7 +47,7 @@ void save_results(const ConflictBasedDecomposer& decomposer, int numAgents)
 }
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << "path decomposer" << std::endl;
     int numAgents = 4;
     int lower = 0;
     int upper = 50;
