@@ -31,7 +31,7 @@ void ConflictBasedDecomposer::findAssignment()
             break;
         }
 
-    }while((path_.size() - visited_.size()) >  numAgents_);
+    }while((path_.size() - visited_.size()) >  0);
 
     std::cout << "[Unassigned] - locations: " << path_.size() - visited_.size() << std::endl;
 
@@ -53,7 +53,7 @@ ConflictBasedDecomposer::COSTMAT ConflictBasedDecomposer::getCostMatrix() const
             if(visited_.count(p.first) == 0)
             {
                 double d  = parentCost_[i] + distance(agent.second.first, agent.second.second, p.second.first, p.second.second);
-                costMatrix[i].push_back(std::make_pair(j, d));
+                costMatrix[i].emplace_back(j, d);
             }
             ++j;
         }
