@@ -24,13 +24,14 @@ int main(int argc, char *argv[])
 {
     int numAgents = 4;
     PathDecomposition::PATH coords, agents;
-    std::string inp_file = "../input/xy.csv";
+    std::string inp_file = "../input/pvis.csv";
     std::string out_file = "../results/";
 
     rapidcsv::Document doc(inp_file, rapidcsv::LabelParams(-1, -1));
     for(int i = 0; i < doc.GetRowCount(); ++i)
         coords[i] = std::make_pair(doc.GetCell<double>(0, i), doc.GetCell<double>(1, i));
     ConflictBasedDecomposer CBD(numAgents, coords);
+    std::vector<double> visibility = doc.GetColumn<double>(2);
 
 
     // load init points
@@ -43,7 +44,7 @@ int main(int argc, char *argv[])
 
      for(int j = 0; j < cand.size(); ++j)
          agents[j] = cand[j];
-    CBD.computeCost(agents);
+    CBD.computeCost(agents, visibility);
     save_results(CBD, numAgents, out_file);
     return 0;
 }

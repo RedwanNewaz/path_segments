@@ -7,6 +7,7 @@
 #include "path_decomposition.h"
 #include "collision_checker.h"
 #include "libMultiRobotPlanning/next_best_assignment.hpp"
+#include "rapidcsv.h"
 using libMultiRobotPlanning::NextBestAssignment;
 
 class ConflictBasedDecomposer: public PathDecomposition
@@ -15,14 +16,16 @@ class ConflictBasedDecomposer: public PathDecomposition
 public:
     ConflictBasedDecomposer(int numAgents,  PATH &path, bool verbose=true);
     void setGeom(const std::array<double, 3>&param);
+    virtual ~ConflictBasedDecomposer();
 
 protected:
     void findAssignment() override;
 private:
     CollisionChecker collision_;
+    rapidcsv::Document *adj_;
 
 
-    COSTMAT getCostMatrix() const;
+    COSTMAT getCostMatrix();
     std::map<std::string, std::string> resolveConflicts(NextBestAssignment<std::string, std::string>& assignment);
     bool moveToTargets(const std::vector<COORD>& prevCoord, const std::vector<COORD>& newCoord);
 

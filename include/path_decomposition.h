@@ -50,9 +50,10 @@ public:
 //    }
 
 
-    void computeCost(const PATH& initPoses)
+    void computeCost(const PATH& initPoses, const std::vector<double>& viz)
     {
 
+        std::copy(viz.begin(), viz.end(), std::back_inserter(visibility_));
         for(const auto& agent: initPoses)
         {
             int i = agent.first;
@@ -63,7 +64,7 @@ public:
     }
 
 protected:
-
+    std::vector<double> visibility_;
     void update(std::map<std::string, std::string>& solution)
     {
         int k = 0;
@@ -81,7 +82,8 @@ protected:
         for(int i = 0; i < prevCoord_.size(); ++i)
         {
             double d = distance(prevCoord_[i].first, prevCoord_[i].second, newCoord_[i].first, newCoord_[i].second);
-            parentCost_[i] += d;
+            parentCost_[i] +=  1000.0 * d / visibility_[i];
+//            parentCost_[i] +=  d ;
             headingAngles_[i] = relAngle(prevCoord_[i], newCoord_[i]);
         }
     }
@@ -156,6 +158,7 @@ protected:
     std::vector<COORD> prevCoord_, newCoord_;
     std::vector<double>parentCost_;
     std::unordered_set<int> visited_;
+    std::unordered_map<int, int> visited_fq_;
 };
 
 

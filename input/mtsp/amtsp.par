@@ -1,0 +1,8 @@
+SPECIAL
+PROBLEM_FILE = /home/redwan/CLionProjects/path_segments/input/mtsp/amtsp.atsp
+SALESMEN = 2
+MTSP_OBJECTIVE = MINSUM
+MTSP_MIN_SIZE = 0
+RUNS = 1
+TRACE_LEVEL = 0
+TOUR_FILE = /home/redwan/CLionProjects/path_segments/results/amtsp/amtsp.tour

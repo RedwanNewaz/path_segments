@@ -6,8 +6,14 @@
 ConflictBasedDecomposer::ConflictBasedDecomposer(int numAgents,  PATH &path, bool verbose) :
 PathDecomposition(numAgents, path){
     verbose_ = verbose;
+    std::string inp_file = "../input/adjmatrix2.csv";
+    adj_ = new rapidcsv::Document(inp_file, rapidcsv::LabelParams(-1, -1));
 }
 
+ConflictBasedDecomposer::~ConflictBasedDecomposer()
+{
+    delete adj_;
+}
 
 void ConflictBasedDecomposer::findAssignment()
 {
@@ -25,6 +31,8 @@ void ConflictBasedDecomposer::findAssignment()
 
         try {
             auto solution = resolveConflicts(assignment);
+            if(solution.size() == 0)
+                break;
             update(solution);
         } catch (const std::exception& e) {
             std::cerr << "Exception: " << e.what() << std::endl;
@@ -41,7 +49,7 @@ void ConflictBasedDecomposer::findAssignment()
 }
 
 
-ConflictBasedDecomposer::COSTMAT ConflictBasedDecomposer::getCostMatrix() const
+ConflictBasedDecomposer::COSTMAT ConflictBasedDecomposer::getCostMatrix()
 {
     int i = 0;
     std::unordered_map<int, std::vector<std::pair<int, double>>> costMatrix;
@@ -50,19 +58,13 @@ ConflictBasedDecomposer::COSTMAT ConflictBasedDecomposer::getCostMatrix() const
         int j = 0;
         for (const auto& p: path_)
         {
-            if(visited_.count(p.first) == 0)
+            double d = 1000.0;
+            if(visited_.count(p.first) == 0 )
             {
-                double angle = atan2(p.second.second - agent.second.second, p.second.first - agent.second.first);
-                std::array<double, 3> ri_start{agent.second.first, agent.second.second, angle};
-                std::array<double, 3> ri_goal{p.second.first, p.second.second, 0};
-
-                double d = std::numeric_limits<double>::max();
-                if(!collision_.isStaticCollision(ri_start, ri_goal))
-                {
-                    d  = parentCost_[i] + distance(agent.second.first, agent.second.second, p.second.first, p.second.second);
-                    costMatrix[i].emplace_back(j, d);
-                }
+                double d  =  parentCost_[i] + distance(agent.second.first, agent.second.second, p.second.first, p.second.second);
+                costMatrix[i].emplace_back(j, 1000.0 * d/(visibility_[i] + visibility_[j]));
             }
+
             ++j;
         }
         ++i;
@@ -82,12 +84,10 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
     {
         removeIndexes.clear();
         c = assignment.nextSolution(solution);
-        solSize = solution.size();
         int k = 0;
         for (const auto& s : solution) {
             int index = std::stoi(s.second);
             prevCoord_[k] = current_[s.first];
-            current_[s.first] = path_[index];
             newCoord_[k] = path_[index];
             removeIndexes.push_back(index);
             ++k;
@@ -99,8 +99,11 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
 
     }while(!moveToTargets(prevCoord_, newCoord_));
     std::cout << "sol size " << solSize << " loop count " << loop << std::endl;
-    for(const auto& index:removeIndexes)
+    int rid = 0;
+    for(const auto& index:removeIndexes) {
         visited_.insert(index);
+        current_["a" + std::to_string(rid++)] = path_[index];
+    }
 
 //    eraseByIndices(removeIndexes);
 
@@ -125,7 +128,6 @@ bool ConflictBasedDecomposer::moveToTargets(const std::vector<COORD>& prevCoord,
     int N = prevCoord.size();
     // check same final goals
 
-
     for(int i = 0; i < N; ++i)
     {
         auto ri_start = toState(prevCoord.at(i));
@@ -134,38 +136,15 @@ bool ConflictBasedDecomposer::moveToTargets(const std::vector<COORD>& prevCoord,
         ri_goal[2] = relAngle(prevCoord.at(i), newCoord.at(i));
 
         if(collision_.isStaticCollision(ri_start, ri_goal))
+        {
+            // back track
+            auto path = getAgentPath(i);
+            auto agentID = "a" + std::to_string(i);
+            auto coord = current_[agentID];
+            auto it = std::find(path.begin(), path.end(), coord);
+            --it;
+            current_[agentID] = *it;
             return false;
-
-        for (int j = 0; j < N; ++j) {
-            if(i != j)
-            {
-                auto rj_start = toState(prevCoord.at(j));
-                rj_start[2] = headingAngles_[j];
-                auto rj_goal = toState(newCoord.at(j));
-                rj_goal[2] = relAngle(prevCoord.at(j), newCoord.at(j));
-
-                if(collision_.isStaticCollision(rj_start, rj_goal))
-                    return false;
-
-//                if(collision_.isDynamicCollision(ri_start, ri_goal, rj_start, rj_start))
-//                    return false;
-
-//                auto ri_start = toState(prevCoord.at(i));
-//                ri_start[2] = headingAngles_[i];
-//                auto ri_goal = toState(newCoord.at(i));
-//                ri_goal[2] = relAngle(prevCoord.at(i), newCoord.at(i));
-//                auto ri = collision_.getCCO(ri_start, ri_goal);
-//
-//                auto rj_start = toState(prevCoord.at(j));
-//                ri_start[2] = headingAngles_[j];
-//                auto rj_goal = toState(newCoord.at(j));
-//                rj_goal[2] = relAngle(prevCoord.at(j), newCoord.at(j));
-//                auto rj = collision_.getCCO(rj_start, rj_goal);
-//                if(collision_.collide(ri, rj))
-//                {
-//                    return false;
-//                }
-            }
         }
     }
     return true;

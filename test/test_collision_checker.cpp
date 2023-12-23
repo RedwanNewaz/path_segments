@@ -52,7 +52,9 @@ TEST(CollisionTests, FreeChecks) {
     Eigen::VectorXd x(5), g(2);
     x << 172.6, 85, M_PI_2, 0, 0;
     g << 202, 75;
-
+//    double angle = atan2(117 - 140, 233 - 62);
+//    x << 62, 140, angle, 0, 0;
+//    g << 233, 117;
     auto env_obj_ = obstacle.getCollisionObj();
     auto traj = robot.genTraj(x, g, 0.5);
     bool collide = false;

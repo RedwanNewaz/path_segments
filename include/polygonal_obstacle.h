@@ -31,13 +31,13 @@ public:
         dq = fmod(dq + M_PI, 2 * M_PI) - M_PI;
         double dist = dx.norm();
         double predTime = dist / robotSize;
-        uu << robotSize, dq / predTime;
-        double dt = 1.0;
         double w = (dq / predTime);
+        uu << robotSize, w;
+        double dt = 1.0;
+
         MotionModel motion(5, dt, predTime);
-        size_t numSamples = 20;
-        if(numSamples < 2)
-            std::cerr << numSamples << std::endl;
+        size_t numSamples = predTime;
+
         return motion.sample(x, uu, numSamples);
 //        return lerp_samples(x, g, numSamples, w);
 
