@@ -52,8 +52,16 @@ ConflictBasedDecomposer::COSTMAT ConflictBasedDecomposer::getCostMatrix() const
         {
             if(visited_.count(p.first) == 0)
             {
-                double d  = parentCost_[i] + distance(agent.second.first, agent.second.second, p.second.first, p.second.second);
-                costMatrix[i].emplace_back(j, d);
+                double angle = atan2(p.second.second - agent.second.second, p.second.first - agent.second.first);
+                std::array<double, 3> ri_start{agent.second.first, agent.second.second, angle};
+                std::array<double, 3> ri_goal{p.second.first, p.second.second, 0};
+
+                double d = std::numeric_limits<double>::max();
+                if(!collision_.isStaticCollision(ri_start, ri_goal))
+                {
+                    d  = parentCost_[i] + distance(agent.second.first, agent.second.second, p.second.first, p.second.second);
+                    costMatrix[i].emplace_back(j, d);
+                }
             }
             ++j;
         }
@@ -69,11 +77,12 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
 
     double c;
     size_t loop = 0;
-
+    int solSize;
     do
     {
         removeIndexes.clear();
         c = assignment.nextSolution(solution);
+        solSize = solution.size();
         int k = 0;
         for (const auto& s : solution) {
             int index = std::stoi(s.second);
@@ -89,7 +98,7 @@ std::map<std::string, std::string>  ConflictBasedDecomposer::resolveConflicts(Ne
         }
 
     }while(!moveToTargets(prevCoord_, newCoord_));
-
+    std::cout << "sol size " << solSize << " loop count " << loop << std::endl;
     for(const auto& index:removeIndexes)
         visited_.insert(index);
 
@@ -119,24 +128,43 @@ bool ConflictBasedDecomposer::moveToTargets(const std::vector<COORD>& prevCoord,
 
     for(int i = 0; i < N; ++i)
     {
+        auto ri_start = toState(prevCoord.at(i));
+        ri_start[2] = headingAngles_[i];
+        auto ri_goal = toState(newCoord.at(i));
+        ri_goal[2] = relAngle(prevCoord.at(i), newCoord.at(i));
+
+        if(collision_.isStaticCollision(ri_start, ri_goal))
+            return false;
+
         for (int j = 0; j < N; ++j) {
             if(i != j)
             {
-                auto ri_start = toState(prevCoord.at(i));
-                ri_start[2] = headingAngles_[i];
-                auto ri_goal = toState(newCoord.at(i));
-                ri_goal[2] = relAngle(prevCoord.at(i), newCoord.at(i));
-                auto ri = collision_.getCCO(ri_start, ri_goal);
-
                 auto rj_start = toState(prevCoord.at(j));
-                ri_start[2] = headingAngles_[j];
+                rj_start[2] = headingAngles_[j];
                 auto rj_goal = toState(newCoord.at(j));
                 rj_goal[2] = relAngle(prevCoord.at(j), newCoord.at(j));
-                auto rj = collision_.getCCO(rj_start, rj_goal);
-                if(collision_.collide(ri, rj))
-                {
+
+                if(collision_.isStaticCollision(rj_start, rj_goal))
                     return false;
-                }
+
+//                if(collision_.isDynamicCollision(ri_start, ri_goal, rj_start, rj_start))
+//                    return false;
+
+//                auto ri_start = toState(prevCoord.at(i));
+//                ri_start[2] = headingAngles_[i];
+//                auto ri_goal = toState(newCoord.at(i));
+//                ri_goal[2] = relAngle(prevCoord.at(i), newCoord.at(i));
+//                auto ri = collision_.getCCO(ri_start, ri_goal);
+//
+//                auto rj_start = toState(prevCoord.at(j));
+//                ri_start[2] = headingAngles_[j];
+//                auto rj_goal = toState(newCoord.at(j));
+//                rj_goal[2] = relAngle(prevCoord.at(j), newCoord.at(j));
+//                auto rj = collision_.getCCO(rj_start, rj_goal);
+//                if(collision_.collide(ri, rj))
+//                {
+//                    return false;
+//                }
             }
         }
     }
@@ -145,5 +173,5 @@ bool ConflictBasedDecomposer::moveToTargets(const std::vector<COORD>& prevCoord,
 }
 
 void ConflictBasedDecomposer::setGeom(const std::array<double, 3> &param) {
-    collision_.setGeom(param);
+
 }

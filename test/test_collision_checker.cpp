@@ -12,8 +12,11 @@ TEST(CollisionTests, CollideChecks) {
     // Create a robot
     Polygon robot("../input/robot.obj");
     Eigen::VectorXd x(5), g(2);
-    x << 171.3, 28.7, M_PI_2, 0, 0;
-    g << 174, 87;
+//    x << 171.3, 28.7, M_PI_2, 0, 0;
+//    g << 174, 87;
+
+    x << 171.1,29, M_PI_2, 0, 0;
+    g << 203.4,76.9;
 
     auto env_obj_ = obstacle.getCollisionObj();
     auto traj = robot.genTraj(x, g, 0.5);

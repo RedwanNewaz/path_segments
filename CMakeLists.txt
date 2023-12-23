@@ -6,7 +6,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 find_package(Eigen3 REQUIRED)
 find_package(FCL REQUIRED)
-find_package(Boost COMPONENTS filesystem program_options python3 REQUIRED)
+find_package(Boost COMPONENTS filesystem program_options python REQUIRED)
 
 
 include_directories(
@@ -19,15 +19,15 @@ link_directories(${CMAKE_BINARY_DIR}/lib)
 link_directories(${CMAKE_BINARY_DIR}/install/lib)
 
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp src/conflict_based_decomposer.cpp)
 target_link_libraries(${PROJECT_NAME}
         Eigen3::Eigen
         ${fcl_LIBRARIES}
         ${Boost_LIBRARIES}
         )
 
-option(BUILD_TESTS "Build tests" OFF)
-if(BUILD_TESTS)
+#option(BUILD_TESTS "Build tests" ON)
+#if(BUILD_TESTS)
     include(cmake/CPM.cmake)
     CPMAddPackage(
             NAME googletest
@@ -40,4 +40,4 @@ if(BUILD_TESTS)
     target_link_libraries(collision_checker_test gtest gtest_main gmock Eigen3::Eigen ${fcl_LIBRARIES})
     enable_testing()
     add_test(collision_checker_test collision_checker_test)
-endif(BUILD_TESTS)
+#endif(BUILD_TESTS)

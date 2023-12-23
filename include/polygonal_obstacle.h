@@ -14,6 +14,7 @@
 
 class Polygon {
     using Model = fcl::BVHModel<fcl::OBBRSSd>;
+
 public:
     Polygon(std::string  filePath):fileName_(std::move(filePath))
     {
@@ -32,9 +33,13 @@ public:
         double predTime = dist / robotSize;
         uu << robotSize, dq / predTime;
         double dt = 1.0;
+        double w = (dq / predTime);
         MotionModel motion(5, dt, predTime);
-        size_t numSamples = predTime / dt;
+        size_t numSamples = 20;
+        if(numSamples < 2)
+            std::cerr << numSamples << std::endl;
         return motion.sample(x, uu, numSamples);
+//        return lerp_samples(x, g, numSamples, w);
 
     }
 
@@ -58,6 +63,32 @@ public:
     }
 
 private:
+    Eigen::MatrixXd lerp_samples(const Eigen::VectorXd& x, const Eigen::VectorXd& g, size_t numSamples, double w) const
+    {
+
+        Point start(x(0), x(1));
+        Point end(g(0), g(1));
+        double heading = x(2);
+        Eigen::MatrixXd traj (numSamples + 1, 5);
+        // Perform interpolation and print the interpolated points
+        for (int i = 0; i <= numSamples; ++i) {
+            // Calculate the parameter t based on the current step
+            double t = static_cast<double>(i) / numSamples;
+
+            // Interpolate between start and end points
+            Point interpolatedPoint = lerp(start, end, t);
+            Eigen::VectorXd nX(5);
+            nX << interpolatedPoint.x, interpolatedPoint.y, heading, 0, 0;
+            traj.row(i) = nX;
+
+
+            // Print the interpolated point coordinates
+//            std::cout << "Interpolated Point " << i << ": (" << interpolatedPoint.x << ", " << interpolatedPoint.y << ")\n";
+            heading += w;
+        }
+
+        return traj;
+    }
     std::shared_ptr<Model> getGeom() const
     {
         // Extract mesh data from the loaded scene
@@ -164,6 +195,28 @@ private:
             }
         }
     }
+
+    struct Point {
+        double x, y;
+
+        Point(double _x, double _y) : x(_x), y(_y) {}
+    };
+
+// Linear interpolation function
+    Point lerp(const Point& p1, const Point& p2, double t) const
+    {
+        return Point(p1.x + t * (p2.x - p1.x), p1.y + t * (p2.y - p1.y));
+    }
+
+// Function to calculate Euclidean distance between two points
+    double distance(const Point& p1, const Point& p2) {
+        double dx = p2.x - p1.x;
+        double dy = p2.y - p1.y;
+        return std::sqrt(dx * dx + dy * dy);
+    }
+
+
+
 
 };
 #endif //VISIBILITY_TASK_PLANNING_POLYGONAL_OBSTACLE_H

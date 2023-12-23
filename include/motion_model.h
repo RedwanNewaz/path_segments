@@ -73,7 +73,8 @@ public:
         while(time < predTime())
         {
             auto next = get(xx, uu, time);
-            traj.row(index++) = next;
+            if(index < size)
+                traj.row(index++) = next;
             time += delta;
         }
         return traj;
