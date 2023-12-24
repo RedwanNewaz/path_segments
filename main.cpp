@@ -5,6 +5,7 @@
 
 int main(int argc, char *argv[])
 {
+    assert(argc > 0 && "No parameter file found!");
     MTSP mtsp(argv[1]);
     if(mtsp.solve())
     {
