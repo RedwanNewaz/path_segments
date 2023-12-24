@@ -1,12 +1,17 @@
 #include <iostream>
 #include <iterator>
 #include "include/lkh_mtsp_solver/lkh3_interface.h"
+#include "include/lkh_mtsp_solver/input_generator.h"
 
 
 int main(int argc, char *argv[])
 {
     assert(argc > 0 && "No parameter file found!");
-    MTSP mtsp(argv[1]);
+    InputGenerator ig(argv[1]);
+    auto file = ig.get_parameter_file();
+    fmt::print("\n\n {} \n", file);
+    const char *par = file.c_str();
+    MTSP mtsp(par);
     if(mtsp.solve())
     {
         for (int i = 0; i < mtsp.getNumAgents(); ++i) {

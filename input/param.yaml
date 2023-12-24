@@ -1,0 +1,23 @@
+ATSP_TEMPLATE: "NAME : amtsp 
+\nTYPE : ATSP 
+\nDIMENSION : {}
+\nEDGE_WEIGHT_TYPE : EXPLICIT
+\nEDGE_WEIGHT_FORMAT : FULL_MATRIX
+\nEDGE_WEIGHT_SECTION 
+\n{}"
+PAR_TEMPLATE: "SPECIAL 
+\nPROBLEM_FILE = {}
+\nSALESMEN = {}
+\nMTSP_OBJECTIVE = MINSUM
+\nMTSP_MIN_SIZE = {} 
+\nRUNS = 4 
+\nTRACE_LEVEL = 0 
+\nTOUR_FILE = {}"
+
+PROBLEM_FILE: "/workspaces/path_segments/input/mtsp/mTspViz.atsp"
+TOUR_FILE: "/workspaces/path_segments/input/mtsp/mTspViz.par"
+
+NUM_ROBOTS: 4
+ADJ_MAT: "/workspaces/path_segments/input/adjmatrix2.csv"
+PVIS_COORD: "/workspaces/path_segments/input/pvis.csv"
+
