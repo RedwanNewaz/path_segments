@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <memory>
 #include "rapidcsv.h"
 
 class InputGenerator
@@ -12,12 +13,14 @@ class InputGenerator
 public:
     InputGenerator(const char * inpFile);
     std::string get_parameter_file();
+    bool isValidEdge(int i, int j);
 
 private:
     int DIM;
     YAML::Node config;
     std::string atsp_file;
     std::string par_file;
+    std::unique_ptr<rapidcsv::Document> adj;
 
 protected:
     std::string create_atsp_file();

@@ -2,6 +2,7 @@ include(cmake/CPM.cmake)
 CPMAddPackage("gh:jbeder/yaml-cpp#yaml-cpp-0.6.3@0.6.3")
 CPMAddPackage("gh:fmtlib/fmt#7.1.3")
 
+
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../_deps/yaml-cpp-src/include)
 
 add_library(input_generator input_generator.cpp)

@@ -1,14 +1,40 @@
-NAME : amtsp.74097.tour
-COMMENT : Length = 74097
-COMMENT : Found by LKH-3 [Keld Helsgaun] Sun Dec 24 06:48:34 2023
+NAME : amtsp.45101.tour
+COMMENT : Length = 45101
+COMMENT : Found by LKH-3 [Keld Helsgaun] Sun Dec 31 23:49:22 2023
 TYPE : TOUR
-DIMENSION : 93
+DIMENSION : 92
 TOUR_SECTION
 1
-88
-86
-87
-80
+54
+57
+56
+58
+60
+53
+51
+55
+52
+38
+39
+36
+40
+37
+68
+66
+24
+67
+75
+73
+71
+72
+69
+29
+14
+12
+4
+84
+2
+92
 90
 48
 50
@@ -24,38 +50,7 @@ TOUR_SECTION
 23
 21
 22
-24
 19
-92
-73
-71
-72
-75
-67
-66
-68
-37
-40
-36
-39
-38
-52
-54
-51
-55
-53
-60
-57
-56
-58
-59
-93
-2
-84
-4
-12
-11
-14
 17
 16
 18
@@ -72,10 +67,15 @@ TOUR_SECTION
 83
 5
 91
+88
+86
+87
+80
 65
 63
 61
 62
+59
 64
 77
 76
@@ -88,13 +88,12 @@ TOUR_SECTION
 45
 42
 74
-69
 28
-29
 26
 30
 27
 13
+11
 15
 3
 -1

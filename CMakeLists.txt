@@ -7,12 +7,14 @@ set(CMAKE_CXX_FLAGS "-std=c++17")
 set(CMAKE_CXX_FLAGS "-O3 -Wall")
 
 
-
 include_directories(
         include
         LKH-3.0.6/SRC/INCLUDE
+        
 )
+
 add_subdirectory(input_generator)
+# add_subdirectory(plotter)
 
 file( GLOB SRCS LKH-3.0.6/SRC/*.c )
 

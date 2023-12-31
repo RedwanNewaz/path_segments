@@ -12,18 +12,22 @@ std::string InputGenerator::get_parameter_file()
     create_par_file();
     return par_file;
 }
+bool InputGenerator::isValidEdge(int i, int j)
+{
+    return (adj->GetCell<int>(j, i) == 1);
+}
 
 std::string InputGenerator::create_atsp_file()
 {
     std::stringstream ss;
     rapidcsv::Document pvisc(config["PVIS_COORD"].as<std::string>(), rapidcsv::LabelParams(-1, -1));
-    rapidcsv::Document adj(config["ADJ_MAT"].as<std::string>(), rapidcsv::LabelParams(-1, -1));
-    for(int i = 0; i < adj.GetRowCount(); ++i)
+    adj = std::make_unique<rapidcsv::Document>(config["ADJ_MAT"].as<std::string>(), rapidcsv::LabelParams(-1, -1));
+    for(int i = 0; i < adj->GetRowCount(); ++i)
     {
-        for(int j = 0; j < adj.GetColumnCount(); ++j)
+        for(int j = 0; j < adj->GetColumnCount(); ++j)
         {
             int cost = 9999;
-            if(adj.GetCell<int>(j, i) == 1)
+            if(adj->GetCell<int>(j, i) == 1)
             {   
                 // get distance 
                 double x1 = pvisc.GetCell<double>(0, i);
@@ -36,12 +40,13 @@ std::string InputGenerator::create_atsp_file()
                 double total_vis = pvisc.GetCell<double>(2, i) + pvisc.GetCell<double>(2, j);
                 // compute cost matrix
                 cost = 100000 * d / total_vis;
+                // cost = 100 * d / total_vis;
             }
             ss << cost << " ";
         }
         ss << "\n";
     }
-    DIM = adj.GetRowCount();
+    DIM = adj->GetRowCount();
     std::string ATSP =fmt::format(config["ATSP_TEMPLATE"].as<std::string>(), DIM, ss.str());
     atsp_file = config["PROBLEM_FILE"].as<std::string>(); 
     save_file(atsp_file, ATSP);

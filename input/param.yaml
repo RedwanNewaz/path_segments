@@ -17,7 +17,7 @@ PAR_TEMPLATE: "SPECIAL
 PROBLEM_FILE: "/workspaces/path_segments/input/mtsp/mTspViz.atsp"
 TOUR_FILE: "/workspaces/path_segments/input/mtsp/mTspViz.par"
 
-NUM_ROBOTS: 4
+NUM_ROBOTS: 3
 ADJ_MAT: "/workspaces/path_segments/input/adjmatrix2.csv"
 PVIS_COORD: "/workspaces/path_segments/input/pvis.csv"
 
