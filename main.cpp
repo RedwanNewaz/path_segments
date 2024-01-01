@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
                 {
                     std::cerr << "not a valid edge (" << j-1 << " -> " << j <<" )" << std::endl;
                     assignment.erase(assignment.begin() + j-1);
+                    // assignment.erase(assignment.begin() + j);
                 }
             }
             
