@@ -1,8 +1,8 @@
 SPECIAL 
-PROBLEM_FILE = /workspaces/path_segments/input/mtsp/mTspViz.atsp 
-SALESMEN = 3 
+PROBLEM_FILE = /Users/redwan/CLionProjects/path_segments/input/mtsp/mTspViz.atsp 
+SALESMEN = 5 
 MTSP_OBJECTIVE = MINSUM 
-MTSP_MIN_SIZE = 21 
+MTSP_MIN_SIZE = 16 
 RUNS = 4 
 TRACE_LEVEL = 0 
-TOUR_FILE = 29
+TOUR_FILE = 17

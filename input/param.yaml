@@ -9,15 +9,15 @@ PAR_TEMPLATE: "SPECIAL
 \nPROBLEM_FILE = {}
 \nSALESMEN = {}
 \nMTSP_OBJECTIVE = MINSUM
-\nMTSP_MIN_SIZE = 21 
+\nMTSP_MIN_SIZE = 16
 \nRUNS = 4 
 \nTRACE_LEVEL = 0 
 \nTOUR_FILE = {}"
 
-PROBLEM_FILE: "/workspaces/path_segments/input/mtsp/mTspViz.atsp"
-TOUR_FILE: "/workspaces/path_segments/input/mtsp/mTspViz.par"
+PROBLEM_FILE: "/Users/redwan/CLionProjects/path_segments/input/mtsp/mTspViz.atsp"
+TOUR_FILE: "/Users/redwan/CLionProjects/path_segments/input/mtsp/mTspViz.par"
 
-NUM_ROBOTS: 3
-ADJ_MAT: "/workspaces/path_segments/input/adjmatrix2.csv"
-PVIS_COORD: "/workspaces/path_segments/input/pvis.csv"
+NUM_ROBOTS: 5
+ADJ_MAT: "/Users/redwan/CLionProjects/path_segments/input/adjmatrix2.csv"
+PVIS_COORD: "/Users/redwan/CLionProjects/path_segments/input/pvis.csv"
 

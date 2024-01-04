@@ -31,7 +31,10 @@ int MTSP::getNumAgents() const
 std::vector<int> MTSP::getAssignment(int agent_id)
 {
     if(agent_id >= solution_.size())
-        return {};
+    {
+        std::vector<int>res;
+        return res;
+    }
     std::vector<int> result;
     return  solution_[agent_id];
 }

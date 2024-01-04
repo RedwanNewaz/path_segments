@@ -2,10 +2,11 @@
 
 mtsp()
 {
-    EXE="build/mtsp"
-    PARAM_FILE="/workspaces/path_segments/input/param.yaml"
+    EXE="cmake-build-debug/mtsp"
+    PARAM_FILE="/Users/redwan/CLionProjects/path_segments/input/param.yaml"
     $EXE $PARAM_FILE
 }
 mtsp
+PYTHON="/Users/redwan/miniconda/bin/python"
 PY_FILE="plotter/plotter.py"
-python $PY_FILE
+$PYTHON $PY_FILE

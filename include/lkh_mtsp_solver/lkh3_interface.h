@@ -28,7 +28,7 @@ public:
 
 private:
     const char* input_file_;
-    std::unordered_map<int, std::vector<int>> solution_;
+    std::unordered_map<int, std::vector<int> > solution_;
     int solveMTSPWithLKH3(const char* input_file);
     std::vector<int> parseSolution(const std::string& output_file) const;
 
